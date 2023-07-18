@@ -1,0 +1,1023 @@
+# -- Name of the application
+appName: "example-app"
+# -- Version of the application
+appVersion: "0.0.1"
+# -- Environment of the application
+appEnv: "dev"
+# -- Override the default namespace
+namespaceOverride:
+
+# -- Docker image configuration
+image:
+  # -- Docker registry
+  registry: docker.io
+  # -- Docker image repository
+  repository: nginx
+  # -- Docker image tag
+  tag: 1.0.0
+  # -- Command to run in the Docker container
+  command:
+  # - /bin/bash
+  # - -ec
+  # - 'sleep infinity'
+  # -- Arguments to pass to the command
+  args:
+
+  # -- Port the application will listen on (>1024)
+  port: 8080
+
+# -- Common annotations for all Kubernetes objects
+commonAnnotations:
+  # common.annotation.example.com/name: common
+
+# -- Common labels for all Kubernetes objects
+commonLabels:
+  # common.labels.example.com/name: common
+
+##########################################################
+# Deployment
+##########################################################
+# -- Deployment configuration
+deployment:
+  # -- Whether to create a Deployment
+  enabled: false
+  # -- Annotations for the Deployment
+  annotations:
+    # deploy.annotations.example.com/name: deploy
+  # -- Labels for the Deployment
+  labels:
+    # deploy.labels.example.com/name: deploy
+
+  # -- Number of replicas (ignored if .keda.enabled is true)
+  replicas: 1
+
+  # -- Deployment strategy
+  strategy: RollingUpdate
+  # maxSurge: "25%"
+  # maxUnavailable: "25%"
+
+  # -- Security context for the Deployment
+  securityContext:
+    # fsGroup: 2000
+  # -- Security context for the container
+  containerSecurityContext:
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  # -- DNS policy for the pods
+  # dnsPolicy: ClusterFirstWithHostNet
+  # -- DNS configuration
+  # dnsConfig:
+  #   options:
+  #   - name: single-request-reopen
+  # -- Whether to share the process namespace between all containers in a pod
+  # shareProcessNamespace: false
+
+  # -- Match labels for the StatefulSet
+  matchLabels:
+
+  # -- Host aliases for the pods
+  hostAliases:
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #   - "foo.local"
+  #   - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #   - "foo.remote"
+  #   - "bar.remote"
+
+  # -- Additional container ports
+  containerPorts:
+  # - name: http-2
+  #   port: 9000
+  # - name: tcp-2
+  #   port: 5000
+
+  # -- List of environment variables
+  envVariables:
+  # - name: FOO
+  #   value: "bar"
+  # - name: BUZZ
+  #   value: "fizz"
+
+  # -- List of secret environment variables
+  # variable   - name of env variable inside container
+  # secretName - name of kubernetes secret object
+  # secretKey  - name of the key in secret object which holds the value
+  envSecrets:
+  # - variable: MYSQL_PASSWORD
+  #   secretName: databases-secrets
+  #   secretKey: mysql-password
+  # - variable: JWT
+  #   secretName: web-tokens
+  #   secretKey: jwt
+
+  # -- List of ConfigMap environment variables
+  # variable   - name of env variable inside container
+  # configMapName - name of kubernetes ConfigMap object
+  # configMapKey  - name of the key in ConfigMap object which holds the value
+  envConfigMaps:
+  # - variable: MYSQL_HOST
+  #   configMapName: mysql-config
+  #   configMapKey: host
+
+  # -- Map of environment variables
+  envMap: 
+    # envMapKey:
+    #   value: envMapValue
+    # foo:
+    #   value: bar
+    # foo1:
+    #   valueFrom:
+    #     configMapKeyRef:
+    #       name: configmap-name
+    #       key: configMapKey
+    # foo2:
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: secret-name
+    #       key: secretKey
+
+  # -- Service account configuration
+  serviceAccount:
+    # -- Whether to use the service account for deployment
+    enabled: false
+    # -- Name of the service account
+    # name:
+
+  # -- Node selector for scheduling the pods
+  nodeSelector: 
+    ### example: schedule pods on on-demand nodes only
+    # node-role.kubernetes.io/on-demand: "true"
+
+  # -- Tolerations for scheduling the pods
+  tolerations:
+  ### example: ignore on-demand nodes taint
+  # - key: "node-role.kubernetes.io/on-demand"
+  #   operator: "Equal"
+  #   value: "true"
+  #   effect: "PreferNoSchedule"
+
+  # -- Affinity rules for scheduling the pods
+  affinity: {}
+    # nodeAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     nodeSelectorTerms:
+    #     - matchExpressions:
+    #       - key: k8s-node-role/services-worker
+    #         operator: In
+    #         values:
+    #         - "true"
+    #       - key: dedicated
+    #         operator: In
+    #         values:
+    #         - "general-purpose"
+    #   preferredDuringSchedulingIgnoredDuringExecution:
+    #   - preference:
+    #       matchExpressions:
+    #       - key: k8s-node-role/spot-worker
+    #         operator: In
+    #         values:
+    #         - "true"
+    #     weight: 100
+  ### example: try spread pods across different nodes
+  # affinity:
+  #   podAntiAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #     - podAffinityTerm:
+  #         labelSelector:
+  #           matchExpressions:
+  #           - key: app
+  #             operator: In
+  #             values:
+  #             - "example"
+
+  # -- Topology spread constraints for scheduling the pods
+  topologySpreadConstraints:
+    # - maxSkew: 1
+    #   topologyKey: kubernetes.io/hostname
+    #   whenUnsatisfiable: ScheduleAnyway
+    #   labelSelector:
+    #     matchExpressions:
+    #     - key: disktype
+    #       operator: In
+    #       values:
+    #       - ssd
+    # - maxSkew: 1
+    #   topologyKey: topology.kubernetes.io/zone
+    #   whenUnsatisfiable: ScheduleAnyway
+    #   labelSelector:
+    #     matchExpressions:
+    #     - key: disktype
+    #       operator: In
+    #       values:
+    #       - ssd
+
+  # -- Liveness probe configuration
+  livenessProbe:
+    # httpGet:
+    #   path: /healthz
+    # initialDelaySeconds: 10
+    # periodSeconds: 10
+    # timeoutSeconds: 5
+    # failureThreshold: 5
+    # successThreshold: 1
+
+  # -- Readiness probe configuration
+  readinessProbe:
+    # httpGet:
+    #   path: /readyz
+    # initialDelaySeconds: 10
+    # periodSeconds: 10
+    # timeoutSeconds: 1
+    # failureThreshold: 3
+    # successThreshold: 1
+
+  # -- Startup probe configuration
+  startupProbe: {}
+
+  # -- Init containers configuration
+  initContainers:
+  # - name: init-mydb
+  #   image: busybox:1.28
+  #   command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+
+  # -- Sidecar containers configuration
+  sidecar:
+  # - name: sidecar-contaner
+  #   image: busybox
+  #   imagePullPolicy: IfNotPresent
+  #   command: ['/bin/sh']
+  #   env:
+  #     - name: FOO
+  #       value: BAR
+  #     - name: FIZZ
+  #       value: BUZZ
+  #   resources:
+  #     requests:
+  #       cpu: 50m
+  #       memory: 100m
+  #     limits:
+  #       cpu: 100m
+  #       memory: 200m
+
+  # -- Resource requests and limits
+  resources: {}
+    # requests:
+    #   cpu: 50m
+    #   memory: 100Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 200Mi
+
+  # -- Lifecycle hooks
+  lifecycle:
+    # preStop:
+    #   exec:
+    #     command: ["/bin/sh", "-c", "sleep 5; nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
+
+  # -- Volume mounts for the container
+  volumeMounts:
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+  # -- Volumes for the pod
+  volumes:
+  # - name: foo1
+  #   configMap:
+  #     name: myconfig
+  # - name: foo2
+  #   secret:
+  #     secretName: mysecret
+  # - name: bar
+  #   emptyDir: {}
+
+##########################################################
+# StatefulSet
+##########################################################
+# -- StatefulSet configuration
+statefulSet:
+  # -- Whether to create a StatefulSet
+  enabled: false
+  # -- Annotations for the StatefulSet
+  annotations:
+    # deploy.annotations.example.com/name: deploy
+  # -- Labels for the StatefulSet
+  labels:
+    # deploy.labels.example.com/name: deploy
+
+  # -- Number of replicas for the StatefulSet
+  # replicas: 1
+
+  # -- Update strategy for the StatefulSet
+  updateStrategy: RollingUpdate #RollingUpdate, OnDelete
+
+  # -- Security context for the StatefulSet
+  securityContext:
+    # fsGroup: 2000
+  # -- Security context for the container
+  containerSecurityContext:
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  # -- DNS policy for the pods
+  # dnsPolicy: ClusterFirstWithHostNet
+  # -- DNS configuration
+  # dnsConfig:
+  #   options:
+  #   - name: single-request-reopen
+  # -- Whether to share the process namespace between all containers in a pod
+  # shareProcessNamespace: false
+
+  # -- Match labels for the StatefulSet
+  matchLabels:
+
+  # -- Host aliases for the pods
+  hostAliases:
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #   - "foo.local"
+  #   - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #   - "foo.remote"
+  #   - "bar.remote"
+
+  # -- Additional container ports
+  containerPorts:
+  # - name: http-2
+  #   port: 9000
+  # - name: tcp-2
+  #   port: 5000
+
+  # -- List of environment variables
+  envVariables:
+  # - name: FOO
+  #   value: "bar"
+  # - name: BUZZ
+  #   value: "fizz"
+
+  # -- List of secret environment variables
+  # variable   - name of env variable inside container
+  # secretName - name of kubernetes secret object
+  # secretKey  - name of the key in secret object which holds the value
+  envSecrets:
+  # - variable: MYSQL_PASSWORD
+  #   secretName: databases-secrets
+  #   secretKey: mysql-password
+  # - variable: JWT
+  #   secretName: web-tokens
+  #   secretKey: jwt
+
+  # -- List of ConfigMap environment variables
+  # variable   - name of env variable inside container
+  # configMapName - name of kubernetes ConfigMap object
+  # configMapKey  - name of the key in ConfigMap object which holds the value
+  envConfigMaps:
+  # - variable: MYSQL_HOST
+  #   configMapName: mysql-config
+  #   configMapKey: host
+
+  # -- Map of environment variables
+  envMap: 
+    # envMapKey:
+    #   value: envMapValue
+    # foo:
+    #   value: bar
+    # foo1:
+    #   valueFrom:
+    #     configMapKeyRef:
+    #       name: configmap-name
+    #       key: configMapKey
+    # foo2:
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: secret-name
+    #       key: secretKey
+
+  # -- Service account configuration
+  serviceAccount:
+    # -- Whether to use the service account for statefulset
+    enabled: false
+    # -- Name of the service account
+    # name:
+
+  # -- Node selector for scheduling the pods
+  nodeSelector: 
+    ### example: schedule pods on on-demand nodes only
+    # node-role.kubernetes.io/on-demand: "true"
+
+  # -- Tolerations for scheduling the pods
+  tolerations:
+  ### example: ignore on-demand nodes taint
+  # - key: "node-role.kubernetes.io/on-demand"
+  #   operator: "Equal"
+  #   value: "true"
+  #   effect: "PreferNoSchedule"
+
+  # -- Affinity rules for scheduling the pods
+  affinity: {}
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: k8s-node-role/services-worker
+#            operator: In
+#            values:
+#            - "true"
+#          - key: dedicated
+#            operator: In
+#            values:
+#            - "general-purpose"
+#      preferredDuringSchedulingIgnoredDuringExecution:
+#      - preference:
+#          matchExpressions:
+#          - key: k8s-node-role/spot-worker
+#            operator: In
+#            values:
+#            - "true"
+#        weight: 100
+  ### example: try spread pods across different nodes
+  # affinity:
+  #   podAntiAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #     - podAffinityTerm:
+  #         labelSelector:
+  #           matchExpressions:
+  #           - key: app
+  #             operator: In
+  #             values:
+  #             - "example"
+
+  # -- Topology spread constraints for scheduling the pods
+  topologySpreadConstraints:
+    # - maxSkew: 1
+    #   topologyKey: kubernetes.io/hostname
+    #   whenUnsatisfiable: ScheduleAnyway
+    #   labelSelector:
+    #     matchExpressions:
+    #     - key: disktype
+    #       operator: In
+    #       values:
+    #       - ssd
+    # - maxSkew: 1
+    #   topologyKey: topology.kubernetes.io/zone
+    #   whenUnsatisfiable: ScheduleAnyway
+    #   labelSelector:
+    #     matchExpressions:
+    #     - key: disktype
+    #       operator: In
+    #       values:
+    #       - ssd
+
+  # -- Liveness probe configuration
+  livenessProbe:
+    # httpGet:
+    #   path: /healthz
+    # initialDelaySeconds: 10
+    # periodSeconds: 10
+    # timeoutSeconds: 5
+    # failureThreshold: 5
+    # successThreshold: 1
+
+  # -- Readiness probe configuration
+  readinessProbe:
+    # httpGet:
+    #   path: /readyz
+    # initialDelaySeconds: 10
+    # periodSeconds: 10
+    # timeoutSeconds: 1
+    # failureThreshold: 3
+    # successThreshold: 1
+
+  # -- Startup probe configuration
+  startupProbe: {}
+
+  # -- Init containers configuration
+  initContainers:
+  # - name: init-mydb
+  #   image: busybox:1.28
+  #   command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+
+  # -- Sidecar containers configuration
+  sidecar:
+  # - name: sidecar-contaner
+  #   image: busybox
+  #   imagePullPolicy: IfNotPresent
+  #   command: ['/bin/sh']
+  #   env:
+  #     - name: FOO
+  #       value: BAR
+  #     - name: FIZZ
+  #       value: BUZZ
+  #   resources:
+  #     requests:
+  #       cpu: 50m
+  #       memory: 100m
+  #     limits:
+  #       cpu: 100m
+  #       memory: 200m
+
+  # -- Resource requests and limits
+  resources: {}
+    # requests:
+    #   cpu: 50m
+    #   memory: 100Mi
+    # limits:
+    #   cpu: 100m
+    #   memory: 200Mi
+
+  # -- Lifecycle hooks
+  lifecycle:
+    # preStop:
+    #   exec:
+    #     command: ["/bin/sh", "-c", "sleep 5; nginx -c /etc/nginx/nginx.conf -s quit; while pgrep -x nginx; do sleep 1; done"]
+
+  # -- Volume mounts for the container
+  volumeMounts:
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+  # -- Volume claim templates for the StatefulSet
+  volumeClaimTemplates:
+    # www: 
+    #   accessModes: "ReadWriteOnce"
+    #   storageClassName: "my-storage-class"
+    #   requestsStorage: 1Gi
+    #   mountPath: /usr/share/nginx/html
+
+  # -- Volumes for the pod
+  volumes:
+  # - name: foo1
+  #   configMap:
+  #     name: myconfig
+  # - name: foo2
+  #   secret:
+  #     secretName: mysecret
+  # - name: bar
+  #   emptyDir: {}
+
+##########################################################
+# Cron Job
+##########################################################
+# -- CronJob configuration
+cronJob:
+  # -- Whether to create a CronJob
+  enabled: false
+  # -- List of jobs to run
+  jobs:
+    # cronjob:
+    #   labels: {}
+    #   annotations: {}
+    #   startingDeadlineSeconds: 60
+    #   serviceAccount:
+    #     enabled: false
+    #   # schedule: "* * * 8 *"
+    #   envMap: {}
+    #     # foo:
+    #     #   value: bar
+    #     # foo1:
+    #     #   valueFrom:
+    #     #     configMapKeyRef:
+    #     #       name: configmap-name
+    #     #       key: configMapKey
+    #     # foo2:
+    #     #   valueFrom:
+    #     #     secretKeyRef:
+    #     #       name: secret-name
+    #     #       key: secretKey
+    #   # image: docker.io/nginx:v1.2.3
+    #   # imagePullPolicy: IfNotPresent
+    #   # command: ["/bin/bash"]
+    #   # args: ["-c","sleep 5000"]
+    #   resources:  {}
+    #     # requests:
+    #     #   memory: 5Gi
+    #     #   cpu: 1
+    #   affinity:
+    #     # nodeAffinity:
+    #     #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     #     nodeSelectorTerms:
+    #     #     - matchExpressions: 
+    #     #       - key: k8s-node-role/job-worker
+    #     #         operator: In
+    #     #         values:
+    #     #         - "true"
+    #     #       - key: dedicated
+    #     #         operator: In
+    #     #         values:
+    #     #         - "general-purpose"
+    #     #   preferredDuringSchedulingIgnoredDuringExecution:
+    #     #   - preference:
+    #     #       matchExpressions:
+    #     #       - key: k8s-node-role/spot-worker
+    #     #         operator: In
+    #     #         values:
+    #     #         - "true"
+    #     #     weight: 100
+    #   tolerations:
+    #   # - effect: NoSchedule
+    #   #   key: k8s-node-role/job-worker
+    #   #   operator: Equal
+    #   #   value: "true"
+
+##########################################################
+# Job
+##########################################################
+# -- Job configuration
+job:
+  # -- Whether to create a Job
+  enabled: false
+  # -- List of jobs to run
+  jobs:
+    # db-migration:
+    #   # ttlSecondsAfterFinished: 300
+    #   # backoffLimit: 2
+    #   serviceAccount:
+    #     enabled: false
+    #   envMap: {}
+    #     # foo:
+    #     #   value: bar
+    #     # foo1:
+    #     #   valueFrom:
+    #     #     configMapKeyRef:
+    #     #       name: configmap-name
+    #     #       key: configMapKey
+    #     # foo2:
+    #     #   valueFrom:
+    #     #     secretKeyRef:
+    #     #       name: secret-name
+    #     #       key: secretKey
+    #   affinity:
+    #     # nodeAffinity:
+    #     #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     #     nodeSelectorTerms:
+    #     #       - matchExpressions:
+    #     #           - key: k8s-node-role/job-worker
+    #     #             operator: In
+    #     #             values:
+    #     #               - "true"
+    #     #           - key: k8s-node-role/on-demand-worker
+    #     #             operator: In
+    #     #             values:
+    #     #               - "true"
+    #     #           - key: dedicated
+    #     #             operator: In
+    #     #             values:
+    #     #               - "general-purpose"
+    #   tolerations:
+    #     # - effect: NoSchedule
+    #     #   key: k8s-node-role/job-worker
+    #     #   operator: Equal
+    #     #   value: "true"
+    #     # - effect: PreferNoSchedule
+    #     #   key: k8s-node-role/on-demand-worker
+    #     #   operator: Equal
+    #     #   value: "true"
+
+##########################################################
+# Pod Disruption Budget - PDB
+##########################################################
+# -- Pod Disruption Budget configuration
+podDisruptionBudget:
+  # -- Whether to create a Pod Disruption Budget
+  enabled: false
+  # -- Minimum number of pods that must be available
+  minAvailable: 1
+  # -- Maximum number of pods that can be unavailable
+  # maxUnavailable: 50%
+
+##########################################################
+# serviceAccount
+##########################################################
+# -- Service Account configuration
+serviceAccount:
+  # -- Whether to create a Service Account
+  create: false
+  # -- Name of the Service Account
+  # name:
+  # -- Labels for the Service Account
+  labels:
+  # -- Annotations for the Service Account
+  annotations:
+  # serviceAccount.annotations.example.com/foo: bar
+
+##########################################################
+# Service
+##########################################################
+# -- Service configuration
+service:
+  # -- Whether to create a Service
+  enabled: false
+  # -- Labels for the Service
+  labels:
+  # expose: "true"
+  # -- Annotations for the Service
+  annotations:
+  # service.annotations.example.com/foo: bar
+  # -- Type of the Service
+  type: ClusterIP
+  # port: 80 # service will listen on the same port as container if not set
+  # -- Ports for the Service
+  ports:
+    # - port: 8080
+    #   name: http
+    #   protocol: TCP
+    #   targetPort: 8080
+
+##########################################################
+# Secret
+##########################################################
+# -- Secret configuration
+secret:
+  # -- Whether to create a Secret
+  enabled: false
+  # -- Labels for the Secret
+  lables: 
+    # key: value
+  # -- Annotations for the Secret
+  annotations: 
+    # key: value
+  # -- Data for the Secret
+  secrets:
+    # nameSuffix of Secret
+    # credentials:
+    #   data:
+    #     secretKey1: secretValue1
+    #     secretKey2: secretValue2
+    # password:
+    #   data:
+    #     secretKey1: secretValue1
+    #     secretKey2: secretValue2
+
+##########################################################
+# Configmap
+##########################################################
+# -- ConfigMap configuration
+configMap:
+  # -- Whether to create a ConfigMap
+  enabled: false
+  # -- Labels for the ConfigMap
+  labels: 
+  # key: value
+  # -- Annotations for the ConfigMap
+  annotations: 
+  # key: value
+  # -- Data for the ConfigMap
+  configs:
+    # nameSuffix of configMap
+    # configmap1:
+    #   data: |-
+    #     API_PORT: "8080"
+    #     LOG_LEVEL: info
+    #     .env: |
+    #       FOO=BAR
+    #       APP=test
+    #     example.json: |
+    #       {
+    #         "test": "123"
+    #       }
+    # configmap2:
+    #   data: |-
+    #     example.yaml: |
+    #       "test": "123"
+
+##########################################################
+# External Secrets
+##########################################################
+# -- External Secret configuration
+externalSecret:
+  # -- Whether to create an External Secret
+  enabled: false
+  # -- Global SecretStore for all ExternalSecrets
+  secretStore:
+    #kind: SecretStore # Defaults to ClusterSecretStore if not specified 
+    name: vault-backend
+  # -- RefreshInterval is the amount of time before the values reading again from the SecretStore provider
+  refreshInterval: "2s"
+  # -- Data for the External Secret
+  secrets:   
+    # mongodb:
+    #   data:
+    #     mongo-password:
+    #       envName: MONGO_PASSWORD
+    #       remoteRef: 
+    #         key: monodb
+    #         property: password 
+    #   secretStore:                       
+    #     name: secret-store-name-2    # specify if value is other than default secretstore  
+    #   labels:
+    #     labels.example.com/name: secret
+    # postgres:
+    #   # Used to fetch all properties from the Provider key
+    #   dataFrom:
+    #     key: postgres
+    # reg-cred:
+    #   refreshInterval: "15s"
+    #   type: kubernetes.io/dockerconfigjson
+    #   dataFrom:
+    #     key: regcrd
+
+##########################################################
+# persistentVolumeClaim
+##########################################################
+# -- persistentVolumeClaim configuration
+persistentVolumeClaim:
+  # -- Whether to create a persistentVolumeClaim
+  enabled: false
+  # -- Labels for the persistentVolumeClaim
+  labels:
+    # key: "value"
+  # -- Annotations for the persistentVolumeClaim
+  annotations:
+  #  "helm.sh/resource-policy": keep
+  # -- Mount path for the persistentVolumeClaim
+  # mountPath: "/mnt/test"
+  # -- Name of the persistentVolumeClaim
+  # name: ""
+  # -- Access mode for the persistentVolumeClaim
+  # accessMode: ReadWriteOnce
+  # -- Storage class for the persistentVolumeClaim
+  # storageClass: "-"
+  # -- Storage size for the persistentVolumeClaim
+  # storageSize: 8Gi
+  # -- Volume mode for the persistentVolumeClaim
+  # volumeMode: ""
+  # -- Volume name for the persistentVolumeClaim
+  # volumeName: ""
+
+##########################################################
+# Ingress
+##########################################################
+# -- Ingress configuration
+ingress:
+  # -- Whether to create an Ingress
+  enabled: false
+  # -- Annotations for the Ingress
+  annotations:
+    # kubernetes.io/ingress.class: nginx-ingress
+    # ingress.kubernetes.io/rewrite-target: /
+    # ingress.kubernetes.io/force-ssl-redirect: "true"
+  # -- Entries for the Ingress
+  entries:
+    # - name: external
+    #   labels:
+    #   annotations:
+    #   ingressClassName: nginx
+    #   hosts:
+    #     - hostname: service1.example.com
+    #       paths:
+    #         - path: /*
+    #           serviceName: ssl-redirect
+    #           servicePortName: use-annotation
+    #         - path: /metrics
+              # pathType:
+              # serviceName:
+              # servicePortNumber:
+      # TLS details for this Ingress
+      # tls:
+      #   - hosts:
+      #       - chart-example.local
+      #       - '{{ .Release.Name }}.example.com'
+      #     # Secrets must be created in the same namespace
+      #     secretName: chart-example-tls
+
+##########################################################
+# Keda
+##########################################################
+# -- Keda configuration
+keda:
+  # -- Whether to enable Keda
+  enabled: false
+  # -- ScaledObject's spec
+  scaledObject:
+    enabled: false
+    spec:
+      # pollingInterval:  30                               # Optional. Default: 30 seconds
+      # cooldownPeriod:   300                              # Optional. Default: 300 seconds
+      # idleReplicaCount: 0                                # Optional. Must be less than minReplicaCount
+      # minReplicaCount:  0                                # Optional. Default: 0
+      # maxReplicaCount:  100                              # Optional. Default: 100
+      # fallback:                                          # Optional. Section to specify fallback options
+      #   failureThreshold: 3                              # Mandatory if fallback section is included
+      #   replicas: 6                                      # Mandatory if fallback section is included
+      # advanced:                                          # Optional. Section to specify advanced options
+      #   restoreToOriginalReplicaCount: true/false        # Optional. Default: false
+      #   horizontalPodAutoscalerConfig:                   # Optional. Section to specify HPA related options
+      #     behavior:                                      # Optional. Use to modify HPA's scaling behavior
+      #       scaleDown:
+      #         stabilizationWindowSeconds: 300
+      #         policies:
+      #         - type: Percent
+      #           value: 100
+      #           periodSeconds: 15
+  # -- TriggersMap spec
+      triggersMap: {}
+        # cpu:
+        #   type: cpu
+        #   metadata:
+        #     type: Utilization
+        #     value: "80"
+        # memory: 
+        #   type: memory
+        #   metadata:
+        #     type: Utilization
+        #     value: "90"
+        # sqs1:
+        #   type: aws-cloudwatch
+        #   metadata:
+        #     # Required: namespace
+        #     namespace: AWS/SQS
+        #     # Required: Dimension Name
+        #     dimensionName: QueueName
+        #     dimensionValue: sqs-test
+        #     metricName: ApproximateNumberOfMessagesVisible
+        #     metricStat: Sum
+        #     metricStatPeriod: "60"
+        #     targetMetricValue: "1"
+        #     minMetricValue: "0"
+        #     # Required: region
+        #     awsRegion: ap-southeast-1
+        #     identityOwner: operator
+        # sqs2:
+        #   type: aws-sqs-queue
+        #   metadata:
+        #     queueURL: https://sqs.ap-southeast-1.amazonaws.com/012345678901/sqs-test
+        #     queueLength: "2"
+        #     ## Required: region
+        #     awsRegion: ap-southeast-1
+        #     identityOwner: operator
+        # cronScaling:
+        #   type: cron
+        #   metadata:
+        #     timezone: Asia/Singapore  ## The acceptable values would be a value from the IANA Time Zone Database. https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        #     start: 30 12 * * *  ## Cron expression indicating the start of the cron schedule.
+        #     end: 45 12 * * *  ## Cron expression indicating the end of the cron schedule.
+        #     desiredReplicas: "6"  ## Number of replicas to which the resource has to be scaled between the start and end of the cron schedule.
+      triggers: []
+      # triggers:
+      # - type: cpu
+      #   metadata:
+      #     type: Utilization
+      #     value: "80"
+      # - type: memory
+      #   metadata:
+      #     type: Utilization
+      #     value: "90"
+      # - type: aws-cloudwatch
+      #   metadata:
+      #     # Required: namespace
+      #     namespace: AWS/SQS
+      #     # Required: Dimension Name
+      #     dimensionName: QueueName
+      #     dimensionValue: sqs-test
+      #     metricName: ApproximateNumberOfMessagesVisible
+      #     metricStat: Sum
+      #     metricStatPeriod: "60"
+      #     targetMetricValue: "1"
+      #     minMetricValue: "0"
+      #     # Required: region
+      #     awsRegion: ap-southeast-1
+      #     identityOwner: operator
+      # - type: aws-sqs-queue
+      #   metadata:
+      #     queueURL: https://sqs.ap-southeast-1.amazonaws.com/012345678901/sqs-test
+      #     queueLength: "2"
+      #     ## Required: region
+      #     awsRegion: ap-southeast-1
+      #     identityOwner: operator
+      # - type: cron
+      #   metadata:
+      #     timezone: Asia/Singapore  ## The acceptable values would be a value from the IANA Time Zone Database. https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      #     start: 30 12 * * *  ## Cron expression indicating the start of the cron schedule.
+      #     end: 45 12 * * *  ## Cron expression indicating the end of the cron schedule.
+      #     desiredReplicas: "6"  ## Number of replicas to which the resource has to be scaled between the start and end of the cron schedule.
+
+  # -- TriggerAuthentication spec
+  triggerAuthentication:
+    # kafka:
+    #   enabled: false
+    #   # spec: {}
+    #   spec:
+    #     secretTargetRef:
+    #     - parameter: username
+    #       name: keda-kafka-secrets
+    #       key: username
+    #     - parameter: password
+    #       name: keda-kafka-secrets
+    #       key: password
+
+##########################################################
+# CustomResources
+##########################################################
+# -- CustomResources configuration
+customResources:
+  # - |
+  #   apiVersion: v1
+  #   kind: myResource
+  #   metadata:
+  #     name: my-custom-configmap
+  #     namespace: default
+  #   data:
+  #     myKey: myValue

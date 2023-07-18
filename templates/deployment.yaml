@@ -1,0 +1,51 @@
+{{- if and .Values.deployment.enabled (not .Values.statefulSet.enabled) }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.name" . }}
+  namespace: {{ include "app.namespace" . }}
+  labels:
+    {{- include "chart.commonLabels" . | indent 4 }}
+    {{- include "chart.deploymentLabels" . | indent 4 }}
+  annotations:
+    {{- include "chart.commonAnnotations" . | indent 4 }}
+    {{- include "chart.deploymentAnnotations" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "chart.appLabels" . | indent 6 }}
+      {{- if .Values.deployment.matchLabels }}
+      {{- toYaml .Values.deployment.matchLabels | nindent 6 }}
+      {{- end }}
+  {{- if .Values.deployment.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
+  {{- end }}
+  {{- if and .Values.deployment.replicas (not .Values.keda.enabled) }}
+  replicas: {{ .Values.deployment.replicas }}
+  {{- end }}
+  strategy:
+    {{- $strategy := .Values.deployment.strategy |  default "RollingUpdate" }}
+    type: {{ $strategy }}
+    {{- if eq $strategy "RollingUpdate" }}
+    rollingUpdate:
+      {{- $replicas := (int .Values.deployment.replicas) | default 1 }}
+      {{- if .Values.deployment.maxSurge }}
+      maxSurge: {{ .Values.deployment.maxSurge }}
+      {{- else }}
+      {{- $maxSurge := ternary "50%" "100%" (gt $replicas 1) }}
+      maxSurge: {{ $maxSurge }}
+      {{- end }}
+      {{- if .Values.deployment.maxUnavailable }}
+      maxUnavailable: {{ .Values.deployment.maxUnavailable }}
+      {{- else }}
+      {{- $maxUnavailable := ternary (div $replicas 2 | int) 0 (gt $replicas 1) }}
+      maxUnavailable: {{ $maxUnavailable }}
+      {{- end }}
+    {{- end }}
+
+  {{- $context :=  merge (dict "resourceType" "deployment" "Chart" $.Chart "Root" $) .Values.deployment }}
+  template: 
+  {{- include "chart.podTemplate" $context | nindent 4 }}
+
+{{- end }}

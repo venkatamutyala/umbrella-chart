@@ -1,0 +1,45 @@
+{{- if and .Values.persistentVolumeClaim.enabled (not .Values.persistentVolumeClaim.existingClaim) }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  {{- if .Values.persistentVolumeClaim.name }}
+  name: "{{ .Values.persistentVolumeClaim.name }}"
+  {{- else }}
+  name: {{ include "app.name" . }}-pvc
+  {{- end }}
+  namespace: {{ include "app.namespace" . }}
+  labels:
+    {{- include "chart.commonLabels" $ | indent 4 }}
+    {{- if $.Values.persistentVolumeClaim.labels }}
+    {{- range $key, $value := $.Values.persistentVolumeClaim.labels }}
+    {{$key}}: {{$value | quote}}
+    {{- end }}
+    {{- end }}
+  annotations:
+    {{- include "chart.commonAnnotations" $ | indent 4 }}
+    {{- if $.Values.persistentVolumeClaim.annotations }}
+    {{- range $key, $value := $.Values.persistentVolumeClaim.annotations }}
+    {{$key}}: {{$value | quote}}
+    {{- end }}
+    {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.persistentVolumeClaim.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolumeClaim.storageSize | quote }}
+  {{- if .Values.persistentVolumeClaim.storageClass }}
+  {{- if (eq "-" .Values.persistentVolumeClaim.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.persistentVolumeClaim.storageClass }}"
+  {{- end }}
+  {{- end }}
+  {{- if .Values.persistentVolumeClaim.volumeMode }}  
+  volumeMode: "{{ .Values.persistentVolumeClaim.volumeMode }}"
+  {{- end }}
+  {{- if .Values.persistentVolumeClaim.volumeName }}  
+  volumeName: "{{ .Values.persistentVolumeClaim.volumeName }}"
+  {{- end }}
+{{- end }}

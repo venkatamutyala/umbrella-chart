@@ -23,7 +23,7 @@ for d in */ ; do
   echo "[INFO] yamllint on directory: $(pwd)"
   helm template ../../ -f ../../values.yaml -f values.yaml | yamllint -c ../.yamllint.yaml -
   echo "[INFO] kubeconform on directory: $(pwd)"
-  helm template ../../ -f ../../values.yaml -f values.yaml | kubeconform -summary -skip=ExternalSecret,TriggerAuthentication,ScaledObject -
+  helm template ../../ -f ../../values.yaml -f values.yaml | kubeconform -summary -skip=ExternalSecret,TriggerAuthentication,ScaledObject,WebApplicationFirewall -
   echo "[INFO] kube-linter on directory: $(pwd)"
   helm template ../../ -f ../../values.yaml -f values.yaml | kube-linter lint --config ../.kube-linter.yaml -
   echo "[INFO] kube-score on directory: $(pwd)"
@@ -31,7 +31,7 @@ for d in */ ; do
   echo "[INFO] polaris on directory: $(pwd)"
   polaris audit --set-exit-code-on-danger --only-show-failed-tests -f pretty --config ../.polaris.yaml --helm-chart ../../ --helm-values values.yaml
   echo "[INFO] kubeval on directory: $(pwd)"
-  helm template ../../ -f ../../values.yaml -f values.yaml | kubeval --kubernetes-version $KUBE_VER_FULL --schema-location https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master --skip-kinds=ExternalSecret --skip-kinds=TriggerAuthentication --skip-kinds=ScaledObject
+  helm template ../../ -f ../../values.yaml -f values.yaml | kubeval --kubernetes-version $KUBE_VER_FULL --schema-location https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master --skip-kinds=ExternalSecret --skip-kinds=TriggerAuthentication --skip-kinds=ScaledObject --skip-kinds=WebApplicationFirewall
   echo "[INFO] kubectl dry-run on directory: $(pwd)"
   helm template ../../ -f ../../values.yaml -f values.yaml |  kubectl apply --dry-run='client' -f - 
   

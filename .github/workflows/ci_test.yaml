@@ -14,7 +14,7 @@ jobs:
           # - k3s release channels at https://github.com/k3s-io/k3s/blob/HEAD/channel.yaml
           # - k3s versions at https://github.com/k3s-io/k3s/tags
           # - helm versions at https://github.com/helm/helm/tags
-          k3s-version: v1.27.2+k3s1
+          k3s-version: v1.27.5+k3s1
           helm-version: v3.11.2
           metrics-enabled: false
           traefik-enabled: false
@@ -31,9 +31,9 @@ jobs:
       - name: Install
         env:
           KUBE_LINTER_VER: 0.6.4
-          KUBE_SCORE_VER: 1.16.1
-          POLARIS_VER: 8.0.0
-          KUBECONFORM_VER: 0.6.2
+          KUBE_SCORE_VER: 1.17.0
+          POLARIS_VER: 8.5.1
+          KUBECONFORM_VER: 0.6.3
         run: |
           sudo apt-get update -yqq
           sudo apt-get install -yqq yamllint wget
@@ -65,9 +65,10 @@ jobs:
           helm repo add kedacore https://kedacore.github.io/charts
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
-          helm install external-secrets external-secrets/external-secrets --version 0.8.3 --wait
-          helm install keda kedacore/keda --version 2.10.2 --wait
+          helm install external-secrets external-secrets/external-secrets --version 0.9.5 --wait
+          helm install keda kedacore/keda --version 2.11.2 --wait
           helm install prometheus prometheus-community/prometheus-operator-crds --wait
+          kubectl apply -f https://raw.githubusercontent.com/GlueOps/metacontroller-operator-waf/main/manifests/crd.yaml
           helm list
 
       - name: Checks

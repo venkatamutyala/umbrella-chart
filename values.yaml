@@ -1044,6 +1044,6 @@ waf:
   #     hosts:
   #       - hostname: "exampletwo.com"
   #       - hostname: "*.exampletwo.com" 
-  #     web_acl_name: "block-bad-networks-and-rate-limit" # Specify the Web ACL to use. 
+  #     webAclName: "block-bad-networks-and-rate-limit" # Specify the Web ACL to use. 
   # # -- Specify a certificate if you want to import it from the secret store.
   #     customCertificateSecretStorePath: "" ## "secret/path-to-secret-in-secret-store"

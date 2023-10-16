@@ -6,7 +6,7 @@ checks:
   pullPolicyNotAlways: ignore
   readinessProbeMissing: danger
   livenessProbeMissing: danger
-  metadataAndNameMismatched: danger
+  #metadataAndNameMismatched: danger
   pdbDisruptionsIsZero: danger
   missingPodDisruptionBudget: danger
   topologySpreadConstraint: danger
@@ -43,3 +43,4 @@ checks:
   clusterrolebindingClusterAdmin: warning
   rolebindingClusterAdminClusterRole: warning
   rolebindingClusterAdminRole: warning
+  metadataAndInstanceMismatched: warning

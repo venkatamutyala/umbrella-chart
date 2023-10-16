@@ -1,6 +1,6 @@
 # app
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)
 
 A Helm chart template for applications
 
@@ -129,3 +129,6 @@ A Helm chart template for applications
 | statefulSet.volumeClaimTemplates | string | `nil` | Volume claim templates for the StatefulSet |
 | statefulSet.volumeMounts | string | `nil` | Volume mounts for the container |
 | statefulSet.volumes | string | `nil` | Volumes for the pod |
+| waf | object | `{"enabled":false,"entries":null}` | WAF configuration |
+| waf.enabled | bool | `false` | Whether to create a WAF |
+| waf.entries | string | `nil` | Entries for the WAFs. Each WAF can have multiple TLD's but will share the same certificate. Create multiple as you need. |

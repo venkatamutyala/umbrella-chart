@@ -1,5 +1,5 @@
-{{- if .Values.webApplicationFirewall.enabled -}}
-{{- range .Values.webApplicationFirewall.entries }}
+{{- if .Values.waf.enabled -}}
+{{- range .Values.waf.entries }}
 ---
 apiVersion: metacontroller.glueops.dev/v1alpha1
 kind: WebApplicationFirewall

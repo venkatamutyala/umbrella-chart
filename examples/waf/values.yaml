@@ -1,4 +1,4 @@
-webApplicationFirewall:
+waf:
   enabled: true
   entries:
     - name: examplewafone

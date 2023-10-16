@@ -4,13 +4,13 @@ templates:
 tests:
   - it: should be disabled by default
     set:
-      webApplicationFirewall.enabled: false
+      waf.enabled: false
     asserts:
       - hasDocuments:
           count: 0
-  - it: should be enabled when webApplicationFirewall.enabled is true
+  - it: should be enabled when waf.enabled is true
     set:
-      webApplicationFirewall:
+      waf:
         enabled: true
         entries:
           - name: testentry
@@ -29,7 +29,7 @@ tests:
           value: "example.com"
   - it: should set web_acl_name when specified
     set:
-      webApplicationFirewall:
+      waf:
         enabled: true
         entries:
           - name: testentry
@@ -40,7 +40,7 @@ tests:
           value: "test-acl-name"
   - it: should set custom_certificate_secret_store_path when specified
     set:
-      webApplicationFirewall:
+      waf:
         enabled: true
         entries:
           - name: testentry
@@ -51,7 +51,7 @@ tests:
           value: "secret/path-in-secret-store"
   - it: should support multiple hostnames for a single WAF entry
     set:
-      webApplicationFirewall:
+      waf:
         enabled: true
         entries:
           - name: testentrymultihost

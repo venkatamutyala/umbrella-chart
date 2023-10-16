@@ -1028,7 +1028,7 @@ customResources:
 # Web Application Firewall (WAF)
 ##########################################################
 # -- WAF configuration
-webApplicationFirewall:
+waf:
   # -- Whether to create a WAF
   enabled: false
   # -- Entries for the WAFs. Each WAF can have multiple TLD's but will share the same certificate. Create multiple as you need.
